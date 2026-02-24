@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Café Table Ordering — Premium (Customer Only)</title>
+
+<!-- ===== ADVANCED DARK + GOLD THEME (CSS) ===== -->
+<style>
+  :root{
+    --bg-dark: #0b0c10;
+    --panel: #0f1116;
+    --glass: rgba(255,255,255,0.03);
+    --muted: #9aa3b2;
+    --gold: #d4af37;
+    --gold-2: #ffd87a;
+    --accent: #ffdca3;
+    --success: #00c853;
+    --danger: #ff5252;
+    --radius: 14px;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,#071018 0%, #0f1116 60%);
+     /* this is menu font color */
+     color:#d4af37;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    padding:24px;
+  }
+
+  header{
+    max-width:1100px; margin:0 auto 20px; display:flex; align-items:center; justify-content:space-between;
+    padding:12px 18px; border-radius:12px; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+  }
+  .brand{font-weight:800; letter-spacing:.4px}
+  .brand span{ color:var(--gold); }
+
+  .container {
+    max-width:1100px;
+    margin: 0 auto;
+  }
+
+  .page {
+    display:none;
+    background: linear-gradient(180deg, rgba(11,12,16,0.9), rgba(15,17,22,0.95));
+    border-radius: var(--radius);
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 18px 40px rgba(3,7,18,0.6);
+    padding:22px;
+    margin-bottom:20px;
+    animation:fadeIn .28s ease;
+  }
+  .active { display:block }
+
+  #countryCode {
+  background-color: #0b0c10; /* black/dark background */
+     color:#d4af37;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 10px 12px;
+  appearance: none;          /* removes default OS arrow */
+  -webkit-appearance: none;  /* safari/chrome */
+  -moz-appearance: none;     /* firefox */
+}
+
+
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
+
+  h1,h2{ margin:0 0 12px 0; color:var(--gold-2); font-weight:700 }
+  p { margin:6px 0 12px 0; color:var(--muted) }
+
+  /* layout */
+  .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:center; }
+  @media (max-width:880px){ .row{ grid-template-columns:1fr } }
+
+  label{ display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
+  input, select, textarea{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.04);
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+    color:#e29b00;
+    outline:none;
+    transition: box-shadow .14s ease, transform .12s ease, border-color .12s ease;
+  }
+  input::placeholder{ color: rgba(230,240,255,0.28); }
+  input:focus, select:focus, textarea:focus{
+    box-shadow: 0 10px 30px rgba(212,175,55,0.08);
+    border-color: rgba(212,175,55,0.28);
+    transform: translateY(-1px);
+  }
+
+  /* buttons */
+  .btn{
+    display:inline-block;
+    padding:12px 18px;
+    border-radius:10px;
+    border:none;
+    color:#111;
+    background: linear-gradient(180deg, var(--gold), var(--gold-2));
+    font-weight:800;
+    cursor:pointer;
+    box-shadow: 0 12px 30px rgba(212,175,55,0.12);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover{ transform: translateY(-3px); box-shadow: 0 18px 40px rgba(212,175,55,0.16); }
+  .btn.secondary{
+    background:transparent;
+     color:#d4af37;
+    border:1px solid rgba(255,255,255,0.06);
+    box-shadow:none;
+  }
+  .btn.ghost{
+    background:transparent;
+    color:var(--muted);
+    border:1px solid rgba(255,255,255,0.04);
+  }
+
+  .center{ text-align:center; }
+
+  /* category grid */
+  .grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:10px; }
+  @media (max-width:980px){ .grid{ grid-template-columns:repeat(2,1fr) } }
+  @media (max-width:640px){ .grid{ grid-template-columns:1fr } }
+  .cat{
+    padding:14px; border-radius:10px; cursor:pointer;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+    border:1px solid rgba(255,255,255,0.03);
+    display:flex; justify-content:space-between; align-items:center;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .cat:hover{ transform:translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.6); }
+
+  /* items */
+  .items { margin-top:12px; }
+  .menu-item{
+    display:grid; grid-template-columns:1fr auto auto 92px; gap:12px; align-items:center;
+    padding:14px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+    margin-bottom:10px;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .menu-item:hover{ transform: translateY(-4px); box-shadow:0 12px 24px rgba(0,0,0,0.6); }
+  .menu-item .name { font-weight:700; }
+  .menu-item .muted { color:var(--muted); font-size:13px; }
+
+  .menu-select, .menu-qty { padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--gold-2); }
+  .menu-qty { width:78px; text-align:center; }
+
+  /* review table */
+  table{ width:100%; border-collapse:collapse; margin-top:12px; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.03); }
+  th, td{ padding:12px 10px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.03); font-size:14px; }
+  th{ background: linear-gradient(90deg, rgba(0,0,0,0.12), rgba(0,0,0,0.05)); color:var(--gold-2); font-weight:700; }
+  tfoot td{ font-weight:800; color:var(--gold-2); }
+
+  .muted{ color:var(--muted); font-size:13px; }
+
+  /* tracking */
+  .tracker { display:flex; flex-direction:column; gap:10px; align-items:center; padding:18px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); border:1px solid rgba(255,255,255,0.02); }
+  .timer { font-weight:900; font-size:20px; color:var(--gold-2); }
+
+  @media (max-width:540px){
+    .menu-item{ grid-template-columns:1fr; gap:8px; }
+    .menu-select, .menu-qty{ width:100%; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">☕ <span>Café</span> Table Ordering</div>
+  </header>
+
+  <div class="container">
+    <!-- LOGIN / START -->
+    <section id="startPage" class="page active">
+      <h2 class="center">Welcome — Start Order</h2>
+      <div class="center">
+        <button class="btn" onclick="showPage('customerPage')">Order as Customer</button>
+      </div>
+    </section>
+
+    <!-- CUSTOMER DETAILS -->
+    <section id="customerPage" class="page">
+      <h2>Enter your details</h2>
+      <form id="customerForm" class="form">
+        <div class="row">
+          <div>
+            <label for="guestName">Full Name</label>
+            <input id="guestName" placeholder="e.g., Your full Name " required>
+          </div>
+          <div>
+<style>
+  select {
+    background-color: black; /* dropdown box ka background */
+     color:#d4af37;
+ /* text ka color */
+    border: 1px solid #555;  /* optional border */
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  select option {
+    background-color: black; /* dropdown me options ka background */
+    color: #d4af37;            /* options ka text color */
+  }
+</style>
+        <label for="orderType">Order Type</label>
+        <select id="orderType" required>
+          <option value="">-- Select --</option>
+          <option value="dining">Dining</option>
+          <option value="pickup">Self Pickup</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row" id="tableRow" style="margin-top:10px; display:none;">
+      <div>
+            <label for="tableNo">Table Number</label>
+            <input id="tableNo" type="number" min="1" placeholder="e.g., 12" required>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <div>
+            <label for="countryCode">Country Code</label>
+            <select id="countryCode">
+              <option value="+91" selected>🇮🇳 +91</option>
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+44">🇬🇧 +44</option>
+              <option value="+971">🇦🇪 +971</option>
+            </select>
+          </div>
+          <div>
+            <label for="mobile">Mobile Number</label>
+            <input id="mobile" inputmode="numeric" placeholder="10 digits for India" required>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <label class="muted">Enter Captcha: <strong>1234</strong></label>
+          <input id="captcha" placeholder="Type 1234" />
+        </div>
+
+        <div class="center" style="margin-top:16px">
+          <button class="btn" type="submit">Continue →</button>
+          <button class="btn secondary" type="button" onclick="showPage('startPage')" style="margin-left:10px">Back</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- CATEGORY -->
+    <section id="categoryPage" class="page">
+      <h2>Choose a Category</h2>
+      <p class="muted">Select categories and add items — your selections across categories will be saved.</p>
+      <div id="categoryGrid" class="grid"></div>
+
+      <div class="center" style="margin-top:16px">
+        <button class="btn secondary" onclick="showPage('customerPage')">Back</button>
+        <button class="btn" onclick="goToReview()" style="margin-left:10px">Review Order</button>
+      </div>
+    </section>
+
+    <!-- ITEMS -->
+    <section id="itemsPage" class="page">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 id="itemsTitle">Items</h2>
+        <div class="muted">Half/Full slider (default Half) • Manual quantity</div>
+      </div>
+
+      <div id="itemsList" class="items"></div>
+
+      <div class="center" style="margin-top:14px">
+        <button class="btn secondary" onclick="showPage('categoryPage')">⬅ Categories</button>
+        <button class="btn" onclick="showPage('categoryPage')" style="margin-left:10px">Done</button>
+      </div>
+    </section>
+
+    <!-- REVIEW -->
+    <section id="reviewPage" class="page">
+      <h2>Review your order</h2>
+      <div id="reviewMeta" class="muted"></div>
+
+      <div style="margin-top:12px">
+        <table id="reviewTable">
+          <thead>
+            <tr><th>Category</th><th>Item</th><th>Size</th><th>Qty</th><th>Unit</th><th>Line</th></tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr><td colspan="5" style="text-align:right">Subtotal</td><td id="subTot">₹0</td></tr>
+            <tr><td colspan="5" style="text-align:right">GST (5%)</td><td id="gst">₹0</td></tr>
+            <tr><td colspan="5" style="text-align:right">Grand Total</td><td id="grandTot">₹0</td></tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="center" style="margin-top:14px">
+        <button class="btn secondary" onclick="showPage('itemsPage')">✏ Edit Items</button>
+        <button class="btn" onclick="placeOrder()" style="margin-left:10px">Place Order</button>
+      </div>
+    </section>
+
+    <!-- TRACKING -->
+    <section id="trackingPage" class="page">
+      <h2>Order Tracking</h2>
+      <div class="tracker">
+        <div class="muted">✅ Your order has been placed</div>
+        <div>Status: <strong id="trackStatus" class="muted">Pending</strong></div>
+        <div class="timer" id="countdown">30:00</div>
+        <div style="margin-top:8px">
+          <button class="btn secondary" onclick="showPage('startPage')">Home</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+<!-- ===== JS: customer-only behavior (cart persists across categories) ===== -->
+<script>
+/* ---------- Catalog (half/full prices in INR) ---------- */
+const CATALOG = {
+  "Tandoor Se": [
+    {name:"Malai Chaap", half:90, full:220},
+    {name:"Masala Chaap", half:90, full:220},
+    {name:"Tandoori Chaap Tikka", half:90, full:220},
+    {name:"Afgani Chaap", half:100, full:250},
+    {name:"Pudina Chaap Tikka", half:90, full:220},
+    {name:"Mushroom Tikka", half:110, full:260},
+    {name:"Paneer Tikka", half:100, full:250},
+    {name:"Paneer Malai Tikka", half:110, full:260},
+    {name:"Stuff Chaap", half:110, full:260},
+    {name:"Achari Chaap", half:90, full:220},
+    {name:"Punjabi Spl. Chaap", half:90, full:220},
+    {name:"Lemon Chaap", half:90, full:220},
+    {name:"Chaap Kali Mirch", half:90, full:220},
+    {name:"Mughlai Chaap", half:100, full:250},
+    {name:"Veg Kabab", half:100, full:250}
+  ],
+  "Rolls": [
+    {name:"Malai Chaap Roll", half:100, full:250},
+    {name:"Masala Chaap Roll", half:100, full:250},
+    {name:"Tandoori Chaap Tikka Roll", half:100, full:250},
+    {name:"Afgani Chaap Roll", half:110, full:260},
+    {name:"Pudina Chaap Tikka Roll", half:100, full:250},
+    {name:"Mushroom Tikka Roll", half:120, full:270},
+    {name:"Paneer Tikka Roll", half:110, full:260},
+    {name:"Paneer Malai Tikka Roll", half:120, full:270},
+    {name:"Stuff Chaap Roll", half:120, full:270},
+    {name:"Achari Chaap Roll", half:100, full:250},
+    {name:"Punjabi Spl. Chaap Roll", half:100, full:250},
+    {name:"Lemon Chaap Roll", half:100, full:250},
+    {name:"Chaap Kali Mirch Roll", half:100, full:250}
+  ],
+  "Gravy Items": [
+    {name:"Dam Aaloo", half:150, full:250},
+    {name:"Dal Fry", half:120, full:200},
+    {name:"Dal Makhani", half:150, full:250},
+    {name:"Kadi Pakoda", half:120, full:200},
+    {name:"Rajma Masala", half:130, full:220},
+    {name:"Pindi Chana", half:140, full:250},
+    {name:"Keema Chaap", half:170, full:280},
+    {name:"Butter Masala Chaap", half:170, full:280},
+    {name:"Kadhai Chaap", half:170, full:280},
+    {name:"Shahi Chaap", half:170, full:280},
+    {name:"Chaap Lababdar", half:170, full:280},
+    {name:"Veg. Soya Leg", half:180, full:300},
+    {name:"Chaap Takatak", half:180, full:300},
+    {name:"Tawa Kabab", half:180, full:300},
+    {name:"Kathi Kabab", half:180, full:300},
+    {name:"Rogan Bhukhari Kabab", half:180, full:300},
+    {name:"Rogan Bhukhari Chaap", half:180, full:300},
+    {name:"Paneer Lababdar", half:170, full:280},
+    {name:"Paneer Dhanya Adraki", half:180, full:300},
+    {name:"Paneer Do Pyaza", half:180, full:300},
+    {name:"Shahi Paneer", half:170, full:280},
+    {name:"Mater Paneer", half:170, full:280},
+    {name:"Kadhai Paneer", half:180, full:300},
+    {name:"Paneer Butter Masala", half:180, full:300},
+    {name:"Paneer Tikka Masala", half:180, full:300},
+    {name:"Paneer Taka Tak", half:180, full:300},
+    {name:"Palak Paneer", half:180, full:300},
+    {name:"Paneer Bhurji", half:150, full:250},
+    {name:"Paneer Mashroom", half:180, full:300},
+    {name:"Palak Chana", half:180, full:300},
+    {name:"Palak Chaap", half:180, full:300},
+    {name:"Mashroom Masala", half:180, full:300},
+    {name:"Mashroom Do Pyaza", half:180, full:300},
+    {name:"Mater Mashroom", half:180, full:300},
+    {name:"Chilli Paneer Gravy", half:170, full:280},
+    {name:"Chilli Chaap Gravy", half:170, full:280},
+    {name:"Chilli Mashroom Gravy", half:170, full:280},
+    {name:"Chilli Gobhi Gravy", half:170, full:280}
+  ],
+  "Fast Foods": [
+    {name:"Veg. Noodles", half:90, full:140},
+    {name:"Veg. Chilli Garlic Noodles", half:100, full:150},
+    {name:"Veg. Singapuri Noodles", half:110, full:170},
+    {name:"Veg. Mix Noodles", half:110, full:170},
+    {name:"Veg. Hakka Noodles", half:110, full:170},
+    {name:"Paneer Noodles", half:110, full:170},
+    {name:"Veg. Spring Roll", half:90, full:140},
+    {name:"Chilli Potato", half:90, full:140},
+    {name:"Honey Chilli Potato", half:100, full:150},
+    {name:"Paneer Manchurian Dry", half:170, full:280},
+    {name:"Gobhi Manchurian Dry", half:150, full:250},
+    {name:"Veg. Manchurian Dry", half:150, full:250},
+    {name:"Chilli Mushroom Dry", half:170, full:280},
+    {name:"Chilli Paneer Dry", half:170, full:280},
+    {name:"Chilli Chaap Dry", half:170, full:280},
+    {name:"Chilli Gobhi Dry", half:170, full:280},
+    {name:"Chilli Kabab Dry", half:170, full:280}
+  ],
+  "Fried Rice": [
+    {name:"Veg. Fried Rice", half:90, full:140},
+    {name:"Veg. Chilli Garlic Fried Rice", half:100, full:150},
+    {name:"Veg. Singapuri Rice", half:110, full:170},
+    {name:"Veg. Mix Rice", half:110, full:170},
+    {name:"Veg. Hakka Rice", half:110, full:170},
+    {name:"Paneer Rice", half:110, full:170},
+    {name:"Veg. Shanghai Rice", half:110, full:170}
+  ],
+  "Rice": [
+    {name:"Rice + Rajma", half:80, full:130},
+    {name:"Rice + Kadhai", half:80, full:130},
+    {name:"Rice + Dal Fry", half:80, full:130},
+    {name:"Rice + Matar Paneer", half:130, full:230},
+    {name:"Plain Rice", half:90, full:120},
+    {name:"Jeera Rice", half:100, full:150},
+    {name:"Matar Pulao", half:120, full:170},
+    {name:"Veg Pulao", half:100, full:150},
+    {name:"Veg Biryani", half:110, full:170}
+  ],
+  "Raita": [
+    {name:"Boondi Raita", half:50, full:70},
+    {name:"Mix Veg Raita", half:60, full:140}
+  ],
+  "Breads": [
+    {name:"Rumali Roti", half:10, full:10},
+    {name:"Plain Tandoori Roti", half:12, full:12},
+    {name:"Butter Tandoori Roti", half:14, full:14},
+    {name:"Lachha Prantha", half:30, full:30},
+    {name:"Missi Butter Roti", half:35, full:35},
+    {name:"Onion Prantha", half:60, full:60},
+    {name:"Aloo Prantha", half:45, full:45},
+    {name:"Aloo Pyaz Prantha", half:50, full:50},
+    {name:"Paneer Prantha", half:70, full:70},
+    {name:"Pudina Prantha", half:50, full:50},
+    {name:"Paneer Onion Mix Prantha", half:70, full:70},
+    {name:"Veg. Keema Prantha", half:50, full:50},
+    {name:"Aloo Naan", half:50, full:50},
+    {name:"Aloo Pyaz Naan", half:55, full:55},
+    {name:"Plain Naan", half:40, full:40},
+    {name:"Butter Naan", half:45, full:45},
+    {name:"Garlic Naan", half:50, full:50},
+    {name:"Pudina Naan", half:45, full:45},
+    {name:"Onion Naan", half:60, full:60},
+    {name:"Paneer Naan", half:70, full:70},
+    {name:"Paneer Onion Mix Naan", half:70, full:70},
+    {name:"Veg. Keema Naan", half:50, full:50}
+  ]
+};
+
+/* ---------- State (persisted to localStorage) ---------- */
+let guest = JSON.parse(localStorage.getItem('guest') || 'null') || {name:'', code:'+91', mobile:'', table:''};
+let cart = JSON.parse(localStorage.getItem('cart') || '[]'); // [{category,name,size,qty,unitPrice}]
+let currentCategory = null;
+let countdownTimer = null;
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+const fmt = n => "₹" + Number(n).toLocaleString('en-IN');
+
+function saveGuest(){ localStorage.setItem('guest', JSON.stringify(guest)); }
+function saveCart(){ localStorage.setItem('cart', JSON.stringify(cart)); }
+function updateGuestPrefill(){
+  if(guest.name) $('guestName').value = guest.name;
+  if(guest.table) $('tableNo').value = guest.table;
+  if(guest.code) $('countryCode').value = guest.code;
+  if(guest.mobile) $('mobile').value = guest.mobile;
+}
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  $(id).classList.add('active');
+  if(id==='categoryPage') renderCategories();
+  if(id==='itemsPage') renderItems(currentCategory);
+  if(id==='reviewPage') buildReview();
+}
+
+/* ---------- Customer form ---------- */
+$('customerForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const name = $('guestName').value.trim();
+  const table = $('tableNo').value.trim();
+  const code = $('countryCode').value;
+  const mobile = $('mobile').value.trim();
+  const captcha = $('captcha').value.trim();
+
+  if(!name){ alert('Please enter your name'); return; }
+  if(!orderType){ alert('Please select order type'); return; }
+  if(orderType==='dining' && !table){ alert('Please enter table number for dining'); return; }
+  if(!validMobile(code,mobile)){ alert('Please enter a valid mobile number for selected country code'); return; }
+  if(captcha !== '1234'){ alert('Captcha incorrect'); return; }
+
+  guest = {name, code, mobile, table};
+  saveGuest();
+  showPage('categoryPage');
+});
+updateGuestPrefill();
+
+// ORDER TYPE HANDLER
+$('orderType').addEventListener('change', function(){
+  if(this.value === 'dining'){
+    $('tableRow').style.display = 'block';
+    $('tableNo').setAttribute('required','required');
+  } else {
+    $('tableRow').style.display = 'none';
+    $('tableNo').removeAttribute('required');
+    $('tableNo').value = '';
+  }
+});
+
+/* simple mobile validation */
+function validMobile(code, num){
+  const d = (num||'').replace(/\D/g,'');
+  if(code==='+91') return /^\d{10}$/.test(d);
+  if(code==='+1') return /^\d{10}$/.test(d);
+  if(code==='+44') return /^\d{9,10}$/.test(d);
+  if(code==='+971') return /^\d{9}$/.test(d);
+  return d.length>=7 && d.length<=12;
+}
+
+/* ---------- Categories ---------- */
+function renderCategories(){
+  const grid = $('categoryGrid');
+  grid.innerHTML = '';
+  Object.keys(CATALOG).forEach(cat=>{
+    const count = cart.filter(i=>i.category===cat).reduce((a,c)=>a+Number(c.qty||0),0);
+    const d = document.createElement('div');
+    d.className = 'cat';
+    d.innerHTML = `<div><strong>${cat}</strong><div class="muted">${count} selected</div></div><div style="color:var(--gold)">&rsaquo;</div>`;
+    d.addEventListener('click', ()=>{
+      currentCategory = cat;
+      showPage('itemsPage');
+    });
+    grid.appendChild(d);
+  });
+}
+
+/* ---------- Items rendering & cart logic ---------- */
+function renderItems(category){
+  $('itemsTitle').textContent = category;
+  const list = $('itemsList');
+  list.innerHTML = '';
+
+  CATALOG[category].forEach((it, idx)=>{
+    const existing = cart.find(c => c.category===category && c.name===it.name) || null;
+    const checked = !!existing;
+    const size = existing ? existing.size : 'Half';
+    const qty = existing ? existing.qty : '';
+
+    const row = document.createElement('div');
+    row.className = 'menu-item';
+    row.innerHTML = `
+      <div>
+        <div class="name">${it.name}</div>
+        <div class="muted">Half: ${fmt(it.half)} • Full: ${fmt(it.full)}</div>
+      </div>
+      <div id="price_${idx}" class="muted">${fmt(size==='Full'?it.full:it.half)}</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <input type="checkbox" id="chk_${idx}" ${checked ? 'checked' : ''} />
+        <input type="range" min="0" max="1" value="${size==='Full' ? 1 : 0}" id="rng_${idx}" class="menu-select" />
+        <span id="lbl_${idx}" class="muted" style="min-width:50px;text-align:center">${size}</span>
+      </div>
+      <input id="qty_${idx}" class="menu-qty" type="number" min="1" placeholder="Qty" value="${qty}">
+    `;
+    list.appendChild(row);
+
+    const chk = $(`chk_${idx}`);
+    const rng = $(`rng_${idx}`);
+    const qtyEl = $(`qty_${idx}`);
+    const lbl = $(`lbl_${idx}`);
+    const priceEl = $(`price_${idx}`);
+
+    const updatePriceLabel = ()=>{
+      const isFull = Number(rng.value)===1;
+      const sz = isFull ? 'Full' : 'Half';
+      lbl.textContent = sz;
+      priceEl.textContent = fmt(isFull ? it.full : it.half);
+    };
+
+    function commit(){
+      const selected = chk.checked;
+      const q = Number(qtyEl.value);
+      const sizeNow = Number(rng.value)===1 ? 'Full' : 'Half';
+      const unit = sizeNow === 'Full' ? it.full : it.half;
+
+      if(selected && q >= 1){
+        const idxCart = cart.findIndex(c => c.category===category && c.name===it.name);
+        const rec = {category, name: it.name, size: sizeNow, qty: q, unitPrice: unit};
+        if(idxCart >= 0) cart[idxCart] = rec;
+        else cart.push(rec);
+        saveCart();
+      } else {
+        const before = cart.length;
+        cart = cart.filter(c => !(c.category===category && c.name===it.name));
+        if(cart.length !== before) saveCart();
+      }
+    }
+
+    rng.addEventListener('input', ()=>{ updatePriceLabel(); commit(); });
+    chk.addEventListener('change', ()=>{ if(chk.checked && (!qtyEl.value || qtyEl.value < 1)) qtyEl.value = 1; commit(); });
+    qtyEl.addEventListener('input', ()=>{ if(!qtyEl.value || Number(qtyEl.value) < 1) chk.checked = false; commit(); });
+
+    updatePriceLabel();
+  });
+}
+
+/* ---------- Review ---------- */
+function goToReview(){
+  // Open review directly if user clicks review from categories
+  if(cart.length === 0){ alert('Please add at least one item from any category.'); return; }
+  buildReview();
+  showPage('reviewPage');
+}
+
+function buildReview(){
+  $('reviewMeta').textContent = `${guest.name} • Table ${guest.table} • ${guest.code} ${guest.mobile}`;
+  const tbody = document.querySelector('#reviewTable tbody');
+  tbody.innerHTML = '';
+  let subtotal = 0;
+
+  // sort by category then name
+  const items = [...cart].sort((a,b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+  items.forEach((it, i)=>{
+    const line = Number(it.unitPrice) * Number(it.qty);
+    subtotal += line;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${it.category}</td><td>${it.name}</td><td>${it.size}</td><td>${it.qty}</td><td>${fmt(it.unitPrice)}</td><td>${fmt(line)}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  const gst = Math.round(subtotal * 0.05);
+  const grand = subtotal + gst;
+  $('subTot').textContent = fmt(subtotal);
+  $('gst').textContent = fmt(gst);
+  $('grandTot').textContent = fmt(grand);
+}
+
+/* ---------- Place Order & Countdown ---------- */
+function placeOrder(){
+  if(cart.length === 0){ alert('Cart empty. Add items first.'); showPage('categoryPage'); return; }
+  const totals = {
+    subtotal: Number(String($('subTot').textContent).replace(/[^\d]/g,'')) || 0,
+    gst: Number(String($('gst').textContent).replace(/[^\d]/g,'')) || 0,
+    grand: Number(String($('grandTot').textContent).replace(/[^\d]/g,'')) || 0
+  };
+
+  const order = {
+    id: 'ORD' + Date.now(),
+    tsISO: new Date().toISOString(),
+    tsDisp: new Date().toLocaleString(),
+    guest: {...guest},
+    items: cart.map(i=>({...i})),
+    totals,
+    status: 'Pending'
+  };
+
+  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  orders.push(order);
+  localStorage.setItem('orders', JSON.stringify(orders));
+  localStorage.setItem('_lastUpdate', String(Date.now()));
+  localStorage.setItem('lastPlacedOrder', JSON.stringify({id: order.id, placedAt: Date.now()}));
+
+  // clear cart but keep guest info (so they can reorder)
+  cart = []; saveCart();
+
+  // start tracking
+  $('trackStatus').textContent = 'Pending';
+  startCountdown(30*60);
+  alert('✅ Your order has been placed.');
+  showPage('trackingPage');
+}
+
+function startCountdown(seconds){
+  clearInterval(countdownTimer);
+  const el = $('countdown');
+  function tick(){
+    const m = Math.floor(seconds/60), s = seconds%60;
+    el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(seconds<=0){ clearInterval(countdownTimer); el.textContent = '00:00'; return; }
+    seconds--;
+  }
+  tick();
+  countdownTimer = setInterval(tick, 1000);
+}
+
+/* ---------- Init / restore ---------- */
+(function boot(){
+  // restore guest into form if saved
+  if(guest.name) $('guestName').value = guest.name;
+  if(guest.table) $('tableNo').value = guest.table;
+  if(guest.code) $('countryCode').value = guest.code;
+  if(guest.mobile) $('mobile').value = guest.mobile;
+
+  // render categories now (if user goes)
+  renderCategories();
+
+  // restore ongoing countdown if any
+  const last = JSON.parse(localStorage.getItem('lastPlacedOrder') || 'null');
+  if(last){
+    const elapsed = Math.floor((Date.now() - last.placedAt)/1000);
+    const remain = 30*60 - elapsed;
+    if(remain > 0){
+      startCountdown(remain);
+      showPage('trackingPage');
+    }
+  }
+})();
+
+/* ---------- Utility (expose some small helpers if needed) ---------- */
+function saveCartAndNotify(){
+  saveCart();
+}
+
+/* Save helpers exposed to global (for debugging if needed) */
+window.saveCart = saveCart;
+window.saveGuest = saveGuest;
+
+</script>
+</body>
+</html>
