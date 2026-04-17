@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Manipal University logo">
+  <rect width="120" height="120" rx="18" fill="#fff8f2"/>
+  <path d="M60 21c6 0 11 4 11 9s-5 9-11 9-11-4-11-9 5-9 11-9z" fill="#d95a12"/>
+  <path d="M38 44h44v12H72v32H60V56h-1v32H47V56h-9z" fill="#c94f10"/>
+  <path d="M26 33c-16 18-15 43 2 60" fill="none" stroke="#8d6a55" stroke-width="4" stroke-linecap="round"/>
+  <path d="M94 33c16 18 15 43-2 60" fill="none" stroke="#8d6a55" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#8d6a55">
+    <path d="M27 42l-11-2 8 8zM23 54l-12 2 11 5zM24 67l-10 6 12 1zM31 79l-8 9 12-3z"/>
+    <path d="M93 42l11-2-8 8zM97 54l12 2-11 5zM96 67l10 6-12 1zM89 79l8 9-12-3z"/>
+  </g>
+  <path d="M31 98c18 11 40 11 58 0" fill="none" stroke="#8d6a55" stroke-width="3" stroke-linecap="round"/>
+  <text x="60" y="107" text-anchor="middle" font-family="Georgia, serif" font-size="10" font-weight="700" fill="#8d6a55">INSPIRED BY LIFE</text>
+</svg>
